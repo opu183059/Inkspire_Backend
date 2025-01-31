@@ -1,0 +1,38 @@
+{
+  "name": "inkspire",
+  "version": "1.0.0",
+  "description": "Stationary shop backend",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "start": "node dist/server.js",
+    "ts.check": "tsc --project tsconfig.json",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "add-build": "git add dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "http-status": "^1.7.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.1.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.0",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^6.0.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.2"
+  }
+}
