@@ -35,6 +35,7 @@ const productSchema = new Schema<IProduct>(
       min: [0, "Quantity cannot be negative"],
     },
     inStock: { type: Boolean, default: true },
+    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );

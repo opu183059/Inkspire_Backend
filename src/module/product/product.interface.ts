@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export enum ProductCategory {
   Writing = "Writing",
   OfficeSupplies = "Office Supplies",
@@ -14,4 +16,5 @@ export interface IProduct {
   description: string;
   quantity: number;
   inStock: boolean;
+  author?: Types.ObjectId;
 }

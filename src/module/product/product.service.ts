@@ -1,8 +1,13 @@
+import httpStatus from "http-status";
+import AppError from "../../error/AppError";
 import { IProduct } from "./product.interface";
 import { Product } from "./product.model";
 
 const createProduct = async (payload: IProduct): Promise<IProduct> => {
-  const result = await Product.create(payload);
+  const result = (await Product.create(payload)).populate("author", {
+    name: 1,
+    email: 1,
+  });
   return result;
 };
 
@@ -29,7 +34,11 @@ const getAllProductWithQuery = async (query: any): Promise<IProduct[]> => {
     sort[sortBy] = sortOrder === "desc" ? -1 : 1;
   }
 
-  const result = await Product.find(conditions).sort(sort);
+  const result = await Product.find(conditions).sort(sort).populate("author", {
+    name: 1,
+    email: 1,
+    _id: 0,
+  });
   return result;
 };
 
@@ -38,15 +47,49 @@ const getSingleProduct = async (id: string) => {
   return result;
 };
 
-const updateProduct = async (id: string, data: IProduct) => {
-  const result = await Product.findByIdAndUpdate(id, data, {
-    new: true,
+const updateProduct = async (
+  productId: string,
+  userID: string,
+  payload: Partial<IProduct>
+) => {
+  const findProductById = await Product.findById(productId);
+
+  if (!findProductById) {
+    throw new AppError(httpStatus.NOT_FOUND, "Product not found");
+  } else if (
+    findProductById.author &&
+    findProductById.author.toString() !== userID
+  ) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "You are not allowed to update this Product"
+    );
+  }
+
+  const result = await Product.findOneAndUpdate(
+    { _id: productId, author: userID },
+    payload,
+    {
+      new: true,
+    }
+  ).populate("author", {
+    name: 1,
+    email: 1,
   });
   return result;
 };
 
-const deleteProduct = async (id: string) => {
-  const result = await Product.findByIdAndDelete(id);
+const deleteProduct = async (productId: string, userID: string) => {
+  const product = await Product.findById(productId);
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, "product not found");
+  } else if (product.author && product.author.toString() !== userID) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "You are not allowed to delete this product"
+    );
+  }
+  const result = await Product.findByIdAndDelete(productId);
   return result;
 };
 
