@@ -66,10 +66,21 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllOrders = catchAsync(async (req: Request, res: Response) => {
+  const result = await orderService.getAllOrders(req.query);
+
+  sendResponse(res, {
+    success: true,
+    message: "Orders fetched successfully",
+    statusCode: httpStatus.OK,
+    data: result,
+  });
+});
+
 const updateOrder = catchAsync(async (req: Request, res: Response) => {
   const orderId = req?.params?.orderId;
   const payload = req?.body;
-  const result = await orderService.updateProduct(orderId, payload);
+  const result = await orderService.updateOrder(orderId, payload);
 
   sendResponse(res, {
     success: true,
@@ -93,6 +104,7 @@ const deleteOrder = catchAsync(async (req: Request, res: Response) => {
 
 export const orderController = {
   createOrder,
+  getAllOrders,
   updateOrder,
   deleteOrder,
 };

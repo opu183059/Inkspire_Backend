@@ -12,6 +12,9 @@ orderRouter.post(
   validateRequest(orderValidation.orderValidationSchema),
   orderController.createOrder
 );
+// Get all orders
+orderRouter.get("/", Auth("admin"), orderController.getAllOrders);
+
 // Update order
 orderRouter.put(
   "/update-order/:orderId",
