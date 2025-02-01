@@ -1,85 +1,98 @@
 import { Request, Response } from "express";
-import { productService } from "../product/product.service";
-import { Order } from "./order.model";
+import { Product } from "../product/product.model";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import httpStatus from "http-status";
 import { orderService } from "./order.service";
+import { productService } from "../product/product.service";
 
-const createOrder = async (req: Request, res: Response) => {
-  try {
-    const {
-      email,
-      product: productId,
-      quantity,
-      totalPrice: givenTotalPrice,
-    } = req.body;
+const createOrder = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  payload.customer = req.user.userID;
 
-    // get the selected product from Products database
-    const product = await productService.getSingleProduct(productId);
+  let totalAmount = 0;
 
-    if (!product || product.quantity < quantity) {
-      res.json({ message: "Insufficient stock", status: false });
-      return;
+  // Validate stock and calculate total price
+  for (const item of payload.items) {
+    const product = await productService.getSingleProduct(item.product);
+
+    if (!product) {
+      return sendResponse(res, {
+        success: false,
+        message: "Product not found",
+        statusCode: httpStatus.NOT_FOUND,
+        data: {},
+      });
     }
 
-    // calculate total price if the total price is not provided
-    const totalPrice = givenTotalPrice
-      ? givenTotalPrice
-      : product.price * quantity;
+    if (product.quantity < item.quantity) {
+      return sendResponse(res, {
+        success: false,
+        message: `Insufficient stock for ${product.name}`,
+        statusCode: httpStatus.BAD_REQUEST,
+        data: { productId: product._id, productName: product.name },
+      });
+    }
 
-    const order = new Order({
-      email,
-      product: productId,
-      quantity,
-      totalPrice,
-    });
-
-    const result = await orderService.createOrder(order);
-
-    // handle the product quantity and stock value after order completion
-    product.quantity = product.quantity - quantity;
-    product.inStock = product.quantity > 0 ? true : false;
-
-    await productService.updateProduct(productId, product);
-
-    res.json({
-      message: "Order created successfully",
-      status: true,
-      data: result,
-    });
-  } catch (error) {
-    res.json({
-      message: "Order Creation failed",
-      status: false,
-      error,
-    });
+    totalAmount += product.price * item.quantity;
   }
-};
 
-const getRevenue = async (req: Request, res: Response) => {
-  try {
-    const revenue = await Order.aggregate([
+  payload.totalAmount = totalAmount;
+
+  // Create and save order
+  const result = await orderService.createOrder(payload);
+
+  // Deduct stock after validation
+  for (const item of payload.items) {
+    const updatedProduct = await Product.findByIdAndUpdate(
+      item.product,
       {
-        $group: {
-          _id: null,
-          totalRevenue: { $sum: { $multiply: ["$totalPrice", "$quantity"] } },
-        },
+        $inc: { quantity: -item.quantity },
       },
-    ]);
+      { new: true }
+    );
 
-    res.json({
-      message: "Revenue calculated successfully",
-      status: true,
-      data: revenue ? revenue[0] : { totalRevenue: 0 },
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "Error calculating revenue",
-      status: false,
-      error,
-    });
+    // If stock reaches 0, update availability to false
+    if (updatedProduct && updatedProduct.quantity === 0) {
+      await Product.findByIdAndUpdate(item.product, { inStock: false });
+    }
   }
-};
+
+  sendResponse(res, {
+    success: true,
+    message: "Order placed successfully",
+    statusCode: httpStatus.CREATED,
+    data: result,
+  });
+});
+
+const updateOrder = catchAsync(async (req: Request, res: Response) => {
+  const orderId = req?.params?.orderId;
+  const payload = req?.body;
+  const result = await orderService.updateProduct(orderId, payload);
+
+  sendResponse(res, {
+    success: true,
+    message: "Orders updated successfully",
+    statusCode: httpStatus.CREATED,
+    data: result,
+  });
+});
+
+const deleteOrder = catchAsync(async (req: Request, res: Response) => {
+  const orderId = req?.params?.orderId;
+  const result = await orderService.deleteOrder(orderId);
+
+  sendResponse(res, {
+    success: true,
+    message: "Product deleted successfully",
+    statusCode: httpStatus.OK,
+    data: {},
+  });
+});
 
 export const orderController = {
   createOrder,
-  getRevenue,
+  updateOrder,
+  deleteOrder,
 };

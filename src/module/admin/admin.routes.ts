@@ -11,7 +11,4 @@ adminRouter.patch(
   adminController.updateUser
 );
 
-// delete blog as admin
-adminRouter.delete("/blogs/:blogId", Auth("admin"), adminController.deleteBlog);
-
 export default adminRouter;

@@ -1,6 +1,12 @@
-export interface IOrder {
-  email: string;
-  product: string;
+import { Types } from "mongoose";
+
+export interface SingleItem {
+  product: Types.ObjectId;
   quantity: number;
-  totalPrice?: number;
+}
+export interface IOrder {
+  customer: Types.ObjectId;
+  items: SingleItem[];
+  totalAmount: number;
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
 }

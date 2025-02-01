@@ -3,24 +3,31 @@ import { IOrder } from "./order.interface";
 
 const orderSchema = new Schema<IOrder>(
   {
-    email: {
-      type: String,
-      required: [true, "Please provide your email"],
-      validate: {
-        validator: function (value: string) {
-          return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(value);
+    customer: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    items: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+          min: [1, "Atleast 1 item is required"],
         },
-        message: "{VALUE} is not a valid email",
+        quantity: {
+          type: Number,
+          required: true,
+          min: [1, "Quantity must be atleast 1"],
+        },
       },
-      immutable: true, // Keeps the email immutable for a particular order
+    ],
+    totalAmount: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: {
+        values: ["pending", "processing", "shipped", "delivered", "cancelled"],
+        message: "{VALUE} is not valid, please provide a valid status ",
+      },
+      default: "pending",
     },
-    product: { type: String, required: [true, "Please insert the product ID"] },
-    quantity: {
-      type: Number,
-      required: [true, "Please insert product quantity"],
-      min: 1,
-    },
-    totalPrice: { type: Number },
   },
   { timestamps: true }
 );
