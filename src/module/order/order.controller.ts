@@ -40,7 +40,7 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   payload.totalAmount = totalAmount;
 
   // Create and save order
-  const result = await orderService.createOrder(payload);
+  const result = await orderService.createOrder(payload, req?.ip!);
 
   // Deduct stock after validation
   for (const item of payload.items) {
@@ -60,9 +60,20 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
 
   sendResponse(res, {
     success: true,
-    message: "Order placed successfully",
     statusCode: httpStatus.CREATED,
+    message: "Order placed successfully",
     data: result,
+  });
+});
+
+const verifyPayment = catchAsync(async (req, res) => {
+  const order = await orderService.verifyPayment(req.query.order_id as string);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Order verified successfully",
+    data: order,
   });
 });
 
@@ -104,6 +115,7 @@ const deleteOrder = catchAsync(async (req: Request, res: Response) => {
 
 export const orderController = {
   createOrder,
+  verifyPayment,
   getAllOrders,
   updateOrder,
   deleteOrder,
