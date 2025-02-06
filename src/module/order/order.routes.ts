@@ -8,9 +8,15 @@ const orderRouter = Router();
 // Create order
 orderRouter.post(
   "/",
-  Auth("admin"),
+  Auth("admin", "user"),
   validateRequest(orderValidation.orderValidationSchema),
   orderController.createOrder
+);
+
+orderRouter.get(
+  "/verify",
+  Auth("admin", "user"),
+  orderController.verifyPayment
 );
 // Get all orders
 orderRouter.get("/", Auth("admin"), orderController.getAllOrders);

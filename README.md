@@ -69,4 +69,16 @@ To run this project, you will need to add the following environment variables to
 
 `JWT_LOGIN_TOKEN_SECRET`
 
+## Shurjopay env file
+
+```bash
+{
+  SP_ENDPOINT = https://sandbox.shurjopayment.com
+  SP_USERNAME = sp_sandbox
+  SP_PASSWORD = pyyk97hu&6u6
+  SP_PREFIX = SP
+  SP_RETURN_URL = https://sandbox.shurjopayment.com/response
+}
+```
+
 Create Section Process: Interface > Validation > Model > Service > Controller > Route
