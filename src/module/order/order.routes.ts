@@ -18,6 +18,14 @@ orderRouter.get(
   Auth("admin", "user"),
   orderController.verifyPayment
 );
+
+// get order by customer id
+orderRouter.get(
+  "/get-order/:customerId",
+  Auth("admin", "user"),
+  orderController.getOrdersByCustomerId
+);
+
 // Get all orders
 orderRouter.get("/", Auth("admin"), orderController.getAllOrders);
 

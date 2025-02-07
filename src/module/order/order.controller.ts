@@ -77,6 +77,20 @@ const verifyPayment = catchAsync(async (req, res) => {
   });
 });
 
+const getOrdersByCustomerId = catchAsync(
+  async (req: Request, res: Response) => {
+    const customerId = req.params.customerId;
+    const result = await orderService.getOrdersByCustomerId(customerId);
+
+    sendResponse(res, {
+      success: true,
+      message: "Orders fetched successfully",
+      statusCode: httpStatus.OK,
+      data: result,
+    });
+  }
+);
+
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const result = await orderService.getAllOrders(req.query);
 
@@ -116,6 +130,7 @@ const deleteOrder = catchAsync(async (req: Request, res: Response) => {
 export const orderController = {
   createOrder,
   verifyPayment,
+  getOrdersByCustomerId,
   getAllOrders,
   updateOrder,
   deleteOrder,

@@ -66,6 +66,21 @@ const verifyPayment = async (order_id: string) => {
   return verifiedPayment;
 };
 
+const getOrdersByCustomerId = async (customerId: string): Promise<IOrder[]> => {
+  const orders = await Order.find({ customer: customerId }).sort({
+    createdAt: -1,
+  });
+
+  if (!orders.length) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "No orders found for this customer"
+    );
+  }
+
+  return orders;
+};
+
 const getAllOrders = async (query: any): Promise<IOrder[]> => {
   const { status, sortBy, sortOrder } = query;
   const conditions: any = {};
@@ -114,6 +129,7 @@ const deleteOrder = async (orderId: string) => {
 export const orderService = {
   createOrder,
   verifyPayment,
+  getOrdersByCustomerId,
   getAllOrders,
   updateOrder,
   deleteOrder,
