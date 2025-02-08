@@ -12,7 +12,7 @@ const createProduct = async (payload: IProduct): Promise<IProduct> => {
 };
 
 const getAllProductWithQuery = async (query: any): Promise<IProduct[]> => {
-  const { search, sortBy, sortOrder, inStock, category } = query;
+  const { search, sortBy, sortOrder, inStock, category, limit } = query;
   const conditions: any = {};
   const sort: any = {};
 
@@ -32,14 +32,19 @@ const getAllProductWithQuery = async (query: any): Promise<IProduct[]> => {
   }
   if (sortBy) {
     sort[sortBy] = sortOrder === "desc" ? -1 : 1;
+  } else {
+    sort["createdAt"] = -1;
   }
 
-  const result = await Product.find(conditions).sort(sort).populate("author", {
+  let result = Product.find(conditions).sort(sort).populate("author", {
     name: 1,
     email: 1,
     _id: 0,
   });
-  return result;
+  if (limit) {
+    result = result.limit(parseInt(limit, 10));
+  }
+  return await result;
 };
 
 const getSingleProduct = async (id: string) => {

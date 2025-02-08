@@ -13,6 +13,7 @@ orderRouter.post(
   orderController.createOrder
 );
 
+// verfify order
 orderRouter.get(
   "/verify",
   Auth("admin", "user"),
@@ -27,7 +28,7 @@ orderRouter.get(
 );
 
 // Get all orders
-orderRouter.get("/", Auth("admin"), orderController.getAllOrders);
+orderRouter.get("/get-all-orders", Auth("admin"), orderController.getAllOrders);
 
 // Update order
 orderRouter.put(
@@ -36,6 +37,7 @@ orderRouter.put(
   validateRequest(orderValidation.orderUpdateValidationSchema),
   orderController.updateOrder
 );
+
 // Delete order
 orderRouter.delete(
   "/delete-order/:orderId",

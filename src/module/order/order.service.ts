@@ -91,6 +91,8 @@ const getAllOrders = async (query: any): Promise<IOrder[]> => {
   }
   if (sortBy) {
     sort[sortBy] = sortOrder === "desc" ? -1 : 1;
+  } else {
+    sort["createdAt"] = -1;
   }
 
   const result = await Order.find(conditions).sort(sort).populate("customer", {

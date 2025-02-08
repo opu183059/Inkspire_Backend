@@ -49,8 +49,34 @@ const getSingleUser = catchAsync(async (req, res) => {
   });
 });
 
+const handleBlockStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const result = await userService.handleBlockStatus(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `User ${result?.isBlocked ? "blocked" : "unblocked"} successfully`,
+    data: result,
+  });
+});
+
+const handleDeleteStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const result = await userService.handleDeleteStatus(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `User ${result?.isDeleted ? "deleted" : "undeleted"} successfully`,
+    data: result,
+  });
+});
+
 export const userController = {
   registerUser,
   getUser,
   getSingleUser,
+  handleBlockStatus,
+  handleDeleteStatus,
 };
