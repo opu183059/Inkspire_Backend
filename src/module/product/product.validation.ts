@@ -31,6 +31,7 @@ const productValidationSchema = z.object({
       invalid_type_error: "Description must be string",
       required_error: "Description is required",
     }),
+    imageUrl: z.string().optional(),
 
     inStock: z.boolean().optional(),
   }),
@@ -72,6 +73,7 @@ const productUpdateValidationSchema = z.object({
       })
       .optional(),
 
+    imageUrl: z.string().optional(),
     inStock: z.boolean().optional(),
   }),
 });

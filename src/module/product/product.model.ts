@@ -27,12 +27,15 @@ const productSchema = new Schema<IProduct>(
     description: {
       type: String,
       required: true,
-      minlength: [5, "Description must be greater then 5 character"],
     },
     quantity: {
       type: Number,
       required: true,
       min: [0, "Quantity cannot be negative"],
+    },
+    imageUrl: {
+      type: String,
+      default: "https://demofree.sirv.com/nope-not-here.jpg",
     },
     inStock: { type: Boolean, default: true },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },

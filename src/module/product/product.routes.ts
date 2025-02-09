@@ -28,6 +28,7 @@ productRouter.put(
   productController.updateProduct
 );
 
+// delete product
 productRouter.delete(
   "/:productId",
   Auth("admin"),

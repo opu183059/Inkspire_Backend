@@ -61,23 +61,11 @@ const updateProduct = async (
 
   if (!findProductById) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
-  } else if (
-    findProductById.author &&
-    findProductById.author.toString() !== userID
-  ) {
-    throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "You are not allowed to update this Product"
-    );
   }
 
-  const result = await Product.findOneAndUpdate(
-    { _id: productId, author: userID },
-    payload,
-    {
-      new: true,
-    }
-  ).populate("author", {
+  const result = await Product.findOneAndUpdate({ _id: productId }, payload, {
+    new: true,
+  }).populate("author", {
     name: 1,
     email: 1,
   });
@@ -88,11 +76,6 @@ const deleteProduct = async (productId: string, userID: string) => {
   const product = await Product.findById(productId);
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND, "product not found");
-  } else if (product.author && product.author.toString() !== userID) {
-    throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "You are not allowed to delete this product"
-    );
   }
   const result = await Product.findByIdAndDelete(productId);
   return result;

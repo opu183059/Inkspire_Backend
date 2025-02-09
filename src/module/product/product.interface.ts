@@ -17,4 +17,5 @@ export interface IProduct {
   quantity: number;
   inStock: boolean;
   author?: Types.ObjectId;
+  imageUrl?: string;
 }
