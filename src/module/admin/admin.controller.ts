@@ -16,19 +16,6 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const deleteBlog = catchAsync(async (req: Request, res: Response) => {
-  const blogId = req?.params?.blogId;
-  const result = await adminService.adminDeleteBlog(blogId);
-
-  sendResponse(res, {
-    success: true,
-    message: "Blog deleted successfully",
-    statusCode: httpStatus.OK,
-    data: {},
-  });
-});
-
 export const adminController = {
   updateUser,
-  deleteBlog,
 };
